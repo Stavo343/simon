@@ -1,0 +1,453 @@
+<html>
+<head>
+<style>
+
+#console {
+	background: black;
+	height: 400px;
+	width: 400px;
+	border-radius: 200px;
+	position: relative;
+}
+
+#top {
+	background: black;
+	height: 200px;
+	width: 400px;
+	border-radius: 200px 200px 0px 0px;
+	position: relative;
+}
+
+#bottom {
+	background: black;
+	height: 200px;
+	width: 400px;
+	border-radius: 0px 0px 200px 200px;
+	position: relative;
+}
+
+#green {
+	background: green;
+	height: 160px;
+	width: 160px;
+	border-top-left-radius: 160px;
+	margin: 30px;
+	position: absolute;
+	float: left;
+	opacity: 0.5;
+}
+
+#red {
+	background: red;
+	height: 160px;
+	width: 160px;
+	border-top-right-radius: 160px;
+	margin: 30px 30px 0px 30px;
+	float: right;
+	opacity: 0.5;
+}
+
+#yellow {
+	background: yellow;
+	height: 160px;
+	width: 160px;
+	border-bottom-left-radius: 160px;
+	margin: 10px 30px 30px 30px;
+	position: absolute;
+	float: left;
+	opacity: 0.5;
+}
+
+#blue {
+	background: blue;
+	height: 160px;
+	width: 160px;
+	border-bottom-right-radius: 160px;
+	margin: 10px 30px 30px 30px;
+	float: right;
+	opacity: 0.5;
+}
+
+#circle {
+	background: black;
+	height: 230px;
+	width: 230px;
+	border-radius: 115px;
+	margin: 85px;
+	z-index: 1;
+	position: absolute;
+}
+
+#controlpanel {
+	background: beige;
+	height: 200px;
+	width: 200px;
+	border-radius: 100px;
+	margin: 15px;
+	position: absolute;
+	text-align: center;
+	font-size: 2em;
+}
+
+#buttons {
+	height: 60px;
+	width: 175px;
+	margin: 10px 0px 0px 10px;
+}
+
+#reset {
+	width: 30%;
+	height: 100%;
+	float: right;
+	font-size: 0.5em;
+}
+
+#strict {
+	width: 30%;
+	height: 100%;
+	float: right;
+	font-size: 0.5em;
+}
+
+#count {
+	width: 40%;
+	height: 100%;
+	float: right;
+	font-size: 0.5em;
+}
+
+#countdisplay {
+	background: black;
+	color: white;
+	height: 50%;
+	width: 62%;
+	margin: 5% 15% 0px 15%;
+	padding-right: 8%;
+	text-align: right;
+	font-size: 1.5em;
+}
+
+#strictswitch {
+	background: grey;
+	height: 20px;
+	width: 80%;
+	margin: 15% 10% 0% 10%;
+}
+
+#stricton {
+	background: black;
+	color: white;
+	height: 14px;
+	width: 50%;
+	padding-top: 6px;
+	text-align: center;
+	font-size: .6em;
+	float: right;
+}
+
+#strictoff {
+	background: black;
+	color: white;
+	height: 14px;
+	width: 50%;
+	padding-top: 6px;
+	text-align: center;
+	font-size: .6em;
+	float: left;
+}
+
+#resetbutton {
+	background: yellow;
+	height: 22px;
+	width: 22px;
+	border-radius: 15px;
+	margin: 5% 0px 0px 10px;
+	border: solid black 4px;
+}
+
+#start {
+	font-size: 0.5em;
+	text-align: center;
+}
+
+#startbutton {
+	background: red;
+	height: 14px;
+	width: 36px;
+	margin-left: 78px;
+	border: solid black 4px;
+}
+
+</style>
+</head>
+<body>
+<div id="console">
+  <div id="circle">
+    <div id="controlpanel">
+      </br>
+      <b>SIMON</b>
+      <div id="buttons">
+        <div id="reset">
+          Reset
+          <div id="resetbutton">
+          </div>
+        </div>
+        <div id="strict">
+          Strict
+          <div id="strictswitch">
+            <div id="stricton">
+              ON
+            </div>
+            <div id="strictoff">
+              OFF
+            </div>
+          </div>
+        </div>
+        <div id="count">
+          Count
+          <div id="countdisplay">
+            0
+          </div>
+        </div>
+      </div>
+      <div id="start">
+        Start
+        <div id="startbutton">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="top">
+    <div id="green">
+    </div>
+    <div id="red">
+    </div>
+  </div>
+  <div id="bottom">
+    <div id="yellow">
+    </div>
+    <div id="blue">
+    </div>
+  </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+
+$(document).ready(function() {
+	$("#stricton").hide();
+});
+
+var g = "#green";
+var r = "#red";
+var y = "#yellow";
+var b = "#blue";
+var gTone = new Audio("https://s3.amazonaws.com/freecodecamp/simonSound1.mp3");
+var rTone = new Audio("https://s3.amazonaws.com/freecodecamp/simonSound2.mp3");
+var yTone = new Audio("https://s3.amazonaws.com/freecodecamp/simonSound3.mp3");
+var bTone = new Audio("https://s3.amazonaws.com/freecodecamp/simonSound4.mp3");
+
+var timer = 0;
+var pattern = [];
+var mimic = [];
+var status = "resting";
+var mode = "normal";
+var count = 0;
+
+function random() {
+	var pick = Math.floor((Math.random() * 10) + 1);
+	if (pick < 5) {
+		return pick;
+	} else {
+		return random();
+	}
+}
+
+function nextStep() {
+	switch(random()) {
+		case 1:
+			pattern.push(g);
+			break;
+		case 2:
+			pattern.push(r);
+			break;
+		case 3:
+			pattern.push(y);
+			break;
+		case 4:
+			pattern.push(b);
+	}
+	count += 1;
+	$("#countdisplay").html(count);
+}
+
+function recite() {
+	timer = 0;
+	mimic = [];
+	for (var i = 0; i < pattern.length; i++) {
+		reciteLine(i);
+		mimic.push(pattern[i]);
+	}
+	setTimeout(function() {
+		status = "waiting";
+	}, timer);
+}
+
+function reciteLine(i) {
+	timer += 500;
+	setTimeout(function() {
+		$(pattern[i]).css("opacity", 1);
+    sound(pattern[i]);
+	}, timer);
+	timer += 500;
+	setTimeout(function() {
+		$(pattern[i]).css("opacity", 0.5);
+	}, timer);
+}
+
+function victory() {
+	$(g).css("opacity", 1);
+  gTone.play();
+	setTimeout(function() {
+		$(g).css("opacity", 0.5);
+		$(r).css("opacity", 1);
+    rTone.play();
+	}, 200);
+	setTimeout(function() {
+		$(r).css("opacity", 0.5);
+		$(b).css("opacity", 1);
+    bTone.play();
+	}, 400);
+	setTimeout(function() {
+		$(b).css("opacity", 0.5);
+		$(y).css("opacity", 1);
+    yTone.play();
+	}, 600);
+	setTimeout(function() {
+		$(y).css("opacity", 0.5);
+	}, 800);
+}
+
+function failure() {
+	$(g).css("opacity", 1);
+	$(r).css("opacity", 1);
+	$(y).css("opacity", 1);
+	$(b).css("opacity", 1);
+  gTone.play();
+  rTone.play();
+  yTone.play();
+  bTone.play();
+	setTimeout(function() {
+		$(g).css("opacity", 0.5);
+		$(r).css("opacity", 0.5);
+		$(y).css("opacity", 0.5);
+		$(b).css("opacity", 0.5);
+	}, 800);
+}
+
+function colorPress(color, tone) {
+	if (status == "waiting" && mimic[0] == color) {
+		$(color).css("opacity", 1);
+    tone.play();
+		setTimeout(function() {
+			$(color).css("opacity", 0.5);
+		}, 200);
+		mimic.shift();
+		if (mimic.length === 0) {
+			status = "reciting";
+			if (count == 20) {
+				setTimeout(function() {
+					victory();
+				  status = "resting";
+					pattern = [];
+					mimic = [];
+					count = 0;
+					$("#countdisplay").html(count);
+				}, 1000);
+			} else {
+				setTimeout(function() {
+					nextStep();
+					recite();
+				}, 200);
+			}
+		}
+	} else if (status == "waiting" && mimic[0] != color) {
+		status = "reciting";
+		if (mode == "normal") {
+			failure();
+			setTimeout(recite, 1000);
+		} else if (mode == "strict") {
+			failure();
+			pattern = [];
+			count = 0;
+			$("#countdisplay").html(count);
+			setTimeout(function() {
+				nextStep();
+				recite();
+			}, 1000);
+		}
+	}
+}
+
+function sound(pitch) {
+  switch(pitch) {
+    case "#green":
+      gTone.play();
+      break;
+    case "#red":
+      rTone.play();
+      break;
+    case "#yellow":
+      yTone.play();
+      break;
+    case "#blue":
+      bTone.play();
+  }
+}
+
+$("#startbutton").on("click", function() {
+	if (status == "resting") {
+		status = "reciting";
+		nextStep();
+		recite();
+	}
+});
+
+$(g).on("click", function() {
+	colorPress(g, gTone);
+});
+$(r).on("click", function() {
+	colorPress(r, rTone);
+});
+$(y).on("click", function() {
+	colorPress(y, yTone);
+});
+$(b).on("click", function() {
+	colorPress(b, bTone);
+});
+
+$("#strictswitch").on("click", function() {
+	if (status == "resting" && mode == "normal") {
+		mode = "strict";
+		$("#stricton").show();
+		$("#strictoff").hide();
+	} else if (status == "resting" && mode == "strict") {
+		mode = "normal";
+		$("#stricton").hide();
+		$("#strictoff").show();
+	}
+});
+
+$("#resetbutton").on("click", function() {
+	if (status == "waiting") {
+		status = "reciting";
+		pattern = [];
+		count = 0;
+		$("#countdisplay").html(count);
+		nextStep();
+		recite();
+	}
+});
+
+</script>
+</body>
+</html>

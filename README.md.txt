@@ -1,0 +1,1 @@
+This is a clone of the game Simon modified for the freecodecamp challenge. The sound can cut out if you click too fast, but it's perfectly playable!
