@@ -1,5 +1,6 @@
 <html>
 <head>
+<title>Simon</title>
 <style>
 
 #console {
@@ -7,7 +8,9 @@
 	height: 400px;
 	width: 400px;
 	border-radius: 200px;
-	position: relative;
+  position: absolute;
+	margin: 5% -50% 20% 50%;
+  transform: translate(-50%);
 }
 
 #top {
@@ -229,6 +232,7 @@
     <div id="blue">
     </div>
   </div>
+	<div> coded by <a href="#">Stephen Nierste</a></div>
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
@@ -253,6 +257,7 @@ var status = "resting";
 var mode = "normal";
 var count = 0;
 
+//Select randomly 1-4
 function random() {
 	var pick = Math.floor((Math.random() * 10) + 1);
 	if (pick < 5) {
@@ -262,6 +267,7 @@ function random() {
 	}
 }
 
+//Add new button from random number
 function nextStep() {
 	switch(random()) {
 		case 1:
@@ -280,6 +286,7 @@ function nextStep() {
 	$("#countdisplay").html(count);
 }
 
+//Create benchmark pattern for the player to follow
 function recite() {
 	timer = 0;
 	mimic = [];
@@ -292,6 +299,7 @@ function recite() {
 	}, timer);
 }
 
+//Display pattern as benchmark is being created
 function reciteLine(i) {
 	timer += 500;
 	setTimeout(function() {
@@ -304,6 +312,7 @@ function reciteLine(i) {
 	}, timer);
 }
 
+//Victory light display
 function victory() {
 	$(g).css("opacity", 1);
   gTone.play();
@@ -327,15 +336,16 @@ function victory() {
 	}, 800);
 }
 
+//Failure light display
 function failure() {
 	$(g).css("opacity", 1);
 	$(r).css("opacity", 1);
 	$(y).css("opacity", 1);
 	$(b).css("opacity", 1);
-  gTone.play();
-  rTone.play();
-  yTone.play();
-  bTone.play();
+	gTone.play();
+	rTone.play();
+	yTone.play();
+	bTone.play();
 	setTimeout(function() {
 		$(g).css("opacity", 0.5);
 		$(r).css("opacity", 0.5);
@@ -344,16 +354,20 @@ function failure() {
 	}, 800);
 }
 
+//Player inputs a color button
 function colorPress(color, tone) {
+	//Color is correct
 	if (status == "waiting" && mimic[0] == color) {
 		$(color).css("opacity", 1);
-    tone.play();
+		tone.play();
 		setTimeout(function() {
 			$(color).css("opacity", 0.5);
 		}, 200);
 		mimic.shift();
+		//Player has completed current pattern
 		if (mimic.length === 0) {
 			status = "reciting";
+			//Player has won
 			if (count == 20) {
 				setTimeout(function() {
 					victory();
@@ -371,10 +385,13 @@ function colorPress(color, tone) {
 			}
 		}
 	} else if (status == "waiting" && mimic[0] != color) {
+		//Color is incorrect
 		status = "reciting";
+		//Normal repeats the pattern
 		if (mode == "normal") {
 			failure();
 			setTimeout(recite, 1000);
+		//Strict resets the pattern
 		} else if (mode == "strict") {
 			failure();
 			pattern = [];
@@ -388,6 +405,7 @@ function colorPress(color, tone) {
 	}
 }
 
+//Filter which sound to play
 function sound(pitch) {
   switch(pitch) {
     case "#green":
@@ -404,6 +422,7 @@ function sound(pitch) {
   }
 }
 
+//Starts the game
 $("#startbutton").on("click", function() {
 	if (status == "resting") {
 		status = "reciting";
@@ -412,6 +431,7 @@ $("#startbutton").on("click", function() {
 	}
 });
 
+//Color click functions
 $(g).on("click", function() {
 	colorPress(g, gTone);
 });
@@ -425,6 +445,7 @@ $(b).on("click", function() {
 	colorPress(b, bTone);
 });
 
+//Toggle strict mode
 $("#strictswitch").on("click", function() {
 	if (status == "resting" && mode == "normal") {
 		mode = "strict";
@@ -437,6 +458,7 @@ $("#strictswitch").on("click", function() {
 	}
 });
 
+//Reset the pattern
 $("#resetbutton").on("click", function() {
 	if (status == "waiting") {
 		status = "reciting";
